@@ -164,9 +164,10 @@ process summarize_freyja {
   output:
   file("*.tsv")
 
+  
   """
   freyja aggregate \
-  ${params.out_dir}/freyja_individual_lineage_summaries/ \
+  ./ \    
   --output freyja_lineage_summary.tsv
 
 #  freyja plot \

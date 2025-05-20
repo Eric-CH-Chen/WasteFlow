@@ -126,6 +126,9 @@ process primer_trim {
 
   input:
   tuple val(sample_id), path(sort_bam), path(sort_bam_bai)
+  path primer_file
+  path primer_pairs_bed
+  
 
   output:
   tuple val(sample_id), file("*.sort.bam"), file("*.sort.bam.bai")
@@ -141,12 +144,12 @@ process primer_trim {
   if (params.primer_pairs=="no_file"){
     pair_cmnd = ""
   } else {
-    pair_cmnd = "-f ${params.primer_pairs}"
+    pair_cmnd = "-f $primer_pairs_bed"
   }
       """
       ${ivar_cmnd} \
       -i ${sort_bam} \
-      -b ${params.primers} \
+      -b ${primer_file} \
       ${params.ivar_flags} \
       -p ${sample_id} \
       ${pair_cmnd}
@@ -301,7 +304,18 @@ workflow TREATMENT {
   }
 
   if (!params.skip_trim) {
-    post_aln_ch = primer_trim(aln_ch)
+
+    if (params.primer_pairs == "no_file") {
+      post_aln_ch = primer_trim(aln_ch, Channel.fromPath(params.primers, checkIfExists:true)
+                                        .collect(), 
+                                        "${baseDir}/NO_FILE")
+    } else {
+      post_aln_ch = primer_trim(aln_ch, Channel.fromPath(params.primer_pairs, checkIfExists:true)
+                                        .collect(),
+                                        Channel.fromPath(params.primer_pairs, checkIfExists:true)
+                                        .collect())
+    }
+    
   } else {
     post_aln_ch = aln_ch
   }

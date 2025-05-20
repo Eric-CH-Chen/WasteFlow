@@ -63,7 +63,8 @@ process qc_reads {
   tuple file("multiqc_report.html"), file("multiqc_data")
 
   """
-  multiqc ${params.out_dir}/.
+  #multiqc ${params.out_dir}/.
+  multiqc ./
 
   """
 }

@@ -166,8 +166,7 @@ process summarize_freyja {
 
   
   """
-  freyja aggregate \
-  ./ \    
+  freyja aggregate ./ \ 
   --output freyja_lineage_summary.tsv
 
 #  freyja plot \

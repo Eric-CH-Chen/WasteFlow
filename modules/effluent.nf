@@ -74,7 +74,8 @@ process lineage_freyja {
   tuple val(sample_id), path(depths), path(vcf)
 
   output:
-  tuple val(sample_id), file("*.tsv"), file("*.yml") 
+  tuple val(sample_id), file("*.tsv"), file("*.yml"), emit: withSampleID
+  tuple path("*.tsv"), path ("*_lineages.yml"), emit: filesOnly
 
   script:
 
@@ -109,7 +110,7 @@ process bootstrap_freyja {
   
   output:
   tuple val(sample_id), file("*_lineages.csv"), file("*_summarized.csv"), file("*_lineages.yml")
-  
+
   """
   freyja boot \
   ${vcf} \
@@ -154,7 +155,8 @@ process barcode_version {
 }
 
 process summarize_freyja {
-  
+  // Currently I cant get freyja aggregate to work in nextflow's work dir, but it can work on output dir
+  // This is a crude workaround, so proceed with care!
   tag "Summarizing relative viral lineage abundances across all samples with Freyja"
   publishDir "${params.out_dir}/freyja_overall_lineage_summary", mode: "copy"
 
@@ -166,8 +168,8 @@ process summarize_freyja {
 
   
   """
-  freyja aggregate ./ \ 
-  --output freyja_lineage_summary.tsv
+  #freyja aggregate ./ --output freyja_lineage_summary.tsv 
+  freyja aggregate  ${launchDir}/${params.out_dir}/freyja_individual_lineage_summaries/ --output freyja_lineage_summary.tsv
 
 #  freyja plot \
 #  freyja_lineage_summary.tsv \
@@ -294,7 +296,7 @@ workflow EFFLUENT {
   
   }
   
-  lineage_ch = lineage_freyja.out
+  lineage_ch = lineage_freyja.out.filesOnly
   
   lineage_ch.collect() | summarize_freyja
 

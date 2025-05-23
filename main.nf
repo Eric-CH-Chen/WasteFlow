@@ -49,6 +49,12 @@ Optional arguments:
  --annotate_snps          Generate annotated, clean, formatted output of mutations per sample in data dir [off]
  --mut_dir                User-defined location to save cumulative mutation table [none]
  --rerun_mut              User-defined pathway/search string used to collect past mutation tables. Must be quoted [none]  
+
+ Cluster Options:
+ --apptainerLib           Requires apptainer. The location of containers
+ --apptainerCache         Requires apptainer. Writable location. Where new containers may be downloaded
+ --clustOp                Cluster job schedular (slurm) specific options.
+ --runOp                  Cluster run options
  --version                Current WasteFlow version number
  --help                   This usage statement
         """
